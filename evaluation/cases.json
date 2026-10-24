@@ -1,0 +1,195 @@
+{
+  "version": "1.0",
+  "notes": "Expected answers and locators were checked against the supplied six-file dataset. Totals explicitly distinguish reported values from calculations.",
+  "cases": [
+    {
+      "id": "E01",
+      "question": "How much electricity was consumed on the Adani bill?",
+      "expected_behavior": "Return reported electricity consumption 47,407 kWh and cite page 1.",
+      "expected_value": 47407,
+      "unit": "kWh",
+      "source_refs": [
+        "Adani commercial electricity bill.pdf p.1"
+      ],
+      "checks": [
+        "value_correct",
+        "source_cited"
+      ]
+    },
+    {
+      "id": "E02",
+      "question": "What is the current month bill amount on the Adani bill?",
+      "expected_behavior": "Distinguish current month bill from the later-due amount including outstanding/DPC; report ₹632,023.17 as current month bill.",
+      "expected_value": 632023.17,
+      "unit": "INR",
+      "source_refs": [
+        "Adani commercial electricity bill.pdf p.1",
+        "Adani commercial electricity bill.pdf p.2"
+      ],
+      "checks": [
+        "value_correct",
+        "amount_type_distinguished",
+        "source_cited"
+      ]
+    },
+    {
+      "id": "E03",
+      "question": "What is the BESCOM net electricity consumption?",
+      "expected_behavior": "Report 63,000 kWh and cite page 1.",
+      "expected_value": 63000,
+      "unit": "kWh",
+      "source_refs": [
+        "BESCOM Commercial Electricity Bill.pdf p.1"
+      ],
+      "checks": [
+        "value_correct",
+        "source_cited"
+      ]
+    },
+    {
+      "id": "E04",
+      "question": "What amount is payable on the BESCOM bill?",
+      "expected_behavior": "Report ₹808,528.00 net payable amount, not an unrelated tariff component.",
+      "expected_value": 808528.0,
+      "unit": "INR",
+      "source_refs": [
+        "BESCOM Commercial Electricity Bill.pdf p.1"
+      ],
+      "checks": [
+        "value_correct",
+        "amount_type_distinguished",
+        "source_cited"
+      ]
+    },
+    {
+      "id": "E05",
+      "question": "What was the water consumption in December 2025?",
+      "expected_behavior": "Report 2,321 cubic metres.",
+      "expected_value": 2321,
+      "unit": "m³",
+      "source_refs": [
+        "water_bill_invoice.pdf p.1"
+      ],
+      "checks": [
+        "value_correct",
+        "source_cited"
+      ]
+    },
+    {
+      "id": "E06",
+      "question": "What is the total amount due on the water invoice?",
+      "expected_behavior": "Report ₹158,733.62 and cite page 2.",
+      "expected_value": 158733.62,
+      "unit": "INR",
+      "source_refs": [
+        "water_bill_invoice.pdf p.2"
+      ],
+      "checks": [
+        "value_correct",
+        "source_cited"
+      ]
+    },
+    {
+      "id": "E07",
+      "question": "How much hazardous waste is listed in Form 3?",
+      "expected_behavior": "List four quantities 1.0, 0.5, 0.5 and 0.4 tonnes; calculated total 2.4 tonnes; cite page 1 and label total as calculated.",
+      "expected_value": 2.4,
+      "unit": "tonnes",
+      "source_refs": [
+        "form 3 filled.docx.pdf p.1"
+      ],
+      "checks": [
+        "value_correct",
+        "calculation_labelled",
+        "source_cited"
+      ]
+    },
+    {
+      "id": "E08",
+      "question": "What are the main commitments in the Nestlé food safety and quality policy?",
+      "expected_behavior": "Summarize food safety/compliance, end-to-end quality, and shared employee responsibility; cite page 3.",
+      "expected_value": "food safety and compliance; end-to-end quality; everyone’s responsibility",
+      "unit": null,
+      "source_refs": [
+        "quality_policy_nestle.pdf p.3"
+      ],
+      "checks": [
+        "answer_supported",
+        "source_cited"
+      ]
+    },
+    {
+      "id": "E09",
+      "question": "What was the highest monthly total consumption in the spreadsheet?",
+      "expected_behavior": "Identify May at 214,900 kWh using the monthly rows; cite Monthly Summary 2026 row 7 (B7:F7 or A7:K7).",
+      "expected_value": 214900,
+      "unit": "kWh",
+      "source_refs": [
+        "Annual Electricity Consumption.xlsx — Monthly Summary 2026!A7:K7"
+      ],
+      "checks": [
+        "value_correct",
+        "source_cited"
+      ]
+    },
+    {
+      "id": "E10",
+      "question": "What annual solar generation is reported in the spreadsheet?",
+      "expected_behavior": "Report 771,065 kWh as the value reported in Source-wise Annual Analysis; cite B3.",
+      "expected_value": 771065,
+      "unit": "kWh",
+      "source_refs": [
+        "Annual Electricity Consumption.xlsx — Source-wise Annual Analysis!A3:I3"
+      ],
+      "checks": [
+        "value_correct",
+        "source_cited"
+      ]
+    },
+    {
+      "id": "E11",
+      "question": "Is FY 2026–27 complete in the provided monthly workbook, and what is the total consumption for available months?",
+      "expected_behavior": "Apply April–March FY. Only Apr–Dec 2026 (9 months) are present; Jan–Mar 2027 are missing. Sum available monthly total-consumption values and disclose incomplete coverage.",
+      "expected_value": {
+        "months_found": 9,
+        "months_expected": 12,
+        "complete": false,
+        "missing_months": [
+          "2027-01",
+          "2027-02",
+          "2027-03"
+        ]
+      },
+      "unit": "kWh",
+      "source_refs": [
+        "Annual Electricity Consumption.xlsx — Monthly Summary 2026!A6:K14"
+      ],
+      "checks": [
+        "coverage_correct",
+        "missing_months_disclosed",
+        "calculation_shown"
+      ]
+    },
+    {
+      "id": "E12",
+      "question": "Do the spreadsheet annual totals reconcile with the monthly rows and quarterly summary?",
+      "expected_behavior": "Flag inconsistency: monthly rows sum to 2,426,123 kWh; Monthly Summary annual total reports 2,425,123 kWh; Quarterly Summary annual total reports 2,427,123 kWh; Source-wise Annual Analysis total reports 2,425,123 kWh. Do not silently select one.",
+      "expected_value": {
+        "monthly_sum": 2426123,
+        "monthly_annual_reported": 2425123,
+        "quarterly_annual_reported": 2427123,
+        "sourcewise_annual_reported": 2425123
+      },
+      "unit": "kWh",
+      "source_refs": [
+        "Annual Electricity Consumption.xlsx — Monthly Summary 2026!F3:F14 and F16",
+        "Annual Electricity Consumption.xlsx — Quarterly Summary!G7",
+        "Annual Electricity Consumption.xlsx — Source-wise Annual Analysis!B7"
+      ],
+      "checks": [
+        "all_three_values_reported",
+        "discrepancy_flagged"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "suite_version": "1.0",
+  "targeted_improvement": "Added explicit financial-year coverage/missing-month disclosure, waste quantity arithmetic labelling, and spreadsheet cross-total reconciliation with conflict reporting.",
+  "baseline_mean_case_score": 0.8612,
+  "improved_mean_case_score": 1.0,
+  "score_delta": 0.1388,
+  "baseline_passed_cases": 9,
+  "improved_passed_cases": 12,
+  "baseline_results": "baseline_results.json",
+  "improved_results": "improved_results.json"
+}

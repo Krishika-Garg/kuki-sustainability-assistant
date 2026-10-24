@@ -1,0 +1,203 @@
+{
+  "mode": "improved",
+  "suite_version": "1.0",
+  "case_count": 12,
+  "mean_case_score": 1.0,
+  "passed_cases": 12,
+  "results": [
+    {
+      "case_id": "E01",
+      "question": "How much electricity was consumed on the Adani bill?",
+      "source_refs": [
+        "Adani commercial electricity bill.pdf p.1"
+      ],
+      "observed": 47407.0,
+      "check_results": {
+        "value_correct": true,
+        "source_cited": true
+      },
+      "score": 1.0,
+      "passed": true
+    },
+    {
+      "case_id": "E02",
+      "question": "What is the current month bill amount on the Adani bill?",
+      "source_refs": [
+        "Adani commercial electricity bill.pdf p.1",
+        "Adani commercial electricity bill.pdf p.2"
+      ],
+      "observed": 632023.17,
+      "check_results": {
+        "value_correct": true,
+        "source_cited": true,
+        "amount_type_distinguished": true
+      },
+      "score": 1.0,
+      "passed": true
+    },
+    {
+      "case_id": "E03",
+      "question": "What is the BESCOM net electricity consumption?",
+      "source_refs": [
+        "BESCOM Commercial Electricity Bill.pdf p.1"
+      ],
+      "observed": 63000.0,
+      "check_results": {
+        "value_correct": true,
+        "source_cited": true
+      },
+      "score": 1.0,
+      "passed": true
+    },
+    {
+      "case_id": "E04",
+      "question": "What amount is payable on the BESCOM bill?",
+      "source_refs": [
+        "BESCOM Commercial Electricity Bill.pdf p.1"
+      ],
+      "observed": 808528.0,
+      "check_results": {
+        "value_correct": true,
+        "source_cited": true,
+        "amount_type_distinguished": true
+      },
+      "score": 1.0,
+      "passed": true
+    },
+    {
+      "case_id": "E05",
+      "question": "What was the water consumption in December 2025?",
+      "source_refs": [
+        "water_bill_invoice.pdf p.1"
+      ],
+      "observed": 2321.0,
+      "check_results": {
+        "value_correct": true,
+        "source_cited": true
+      },
+      "score": 1.0,
+      "passed": true
+    },
+    {
+      "case_id": "E06",
+      "question": "What is the total amount due on the water invoice?",
+      "source_refs": [
+        "water_bill_invoice.pdf p.2"
+      ],
+      "observed": 158733.62,
+      "check_results": {
+        "value_correct": true,
+        "source_cited": true
+      },
+      "score": 1.0,
+      "passed": true
+    },
+    {
+      "case_id": "E07",
+      "question": "How much hazardous waste is listed in Form 3?",
+      "source_refs": [
+        "form 3 filled.docx.pdf p.1"
+      ],
+      "observed": 2.4,
+      "check_results": {
+        "value_correct": true,
+        "calculation_labelled": true,
+        "source_cited": true
+      },
+      "score": 1.0,
+      "passed": true
+    },
+    {
+      "case_id": "E08",
+      "question": "What are the main commitments in the Nestlé food safety and quality policy?",
+      "source_refs": [
+        "quality_policy_nestle.pdf p.3"
+      ],
+      "observed": "food safety and compliance; end-to-end quality; everyone’s responsibility",
+      "check_results": {
+        "answer_supported": true,
+        "source_cited": true
+      },
+      "score": 1.0,
+      "passed": true
+    },
+    {
+      "case_id": "E09",
+      "question": "What was the highest monthly total consumption in the spreadsheet?",
+      "source_refs": [
+        "Annual Electricity Consumption.xlsx — Monthly Summary 2026!A7:K7"
+      ],
+      "observed": [
+        214900.0,
+        "May",
+        7
+      ],
+      "check_results": {
+        "value_correct": true,
+        "source_cited": true
+      },
+      "score": 1.0,
+      "passed": true
+    },
+    {
+      "case_id": "E10",
+      "question": "What annual solar generation is reported in the spreadsheet?",
+      "source_refs": [
+        "Annual Electricity Consumption.xlsx — Source-wise Annual Analysis!A3:I3"
+      ],
+      "observed": 771065.0,
+      "check_results": {
+        "value_correct": true,
+        "source_cited": true
+      },
+      "score": 1.0,
+      "passed": true
+    },
+    {
+      "case_id": "E11",
+      "question": "Is FY 2026–27 complete in the provided monthly workbook, and what is the total consumption for available months?",
+      "source_refs": [
+        "Annual Electricity Consumption.xlsx — Monthly Summary 2026!A6:K14"
+      ],
+      "observed": {
+        "months_found": 9,
+        "months_expected": 12,
+        "complete": false,
+        "missing_months": [
+          "2027-01",
+          "2027-02",
+          "2027-03"
+        ],
+        "total_consumption_kwh": 1841800.0
+      },
+      "check_results": {
+        "coverage_correct": true,
+        "missing_months_disclosed": true,
+        "calculation_shown": true
+      },
+      "score": 1.0,
+      "passed": true
+    },
+    {
+      "case_id": "E12",
+      "question": "Do the spreadsheet annual totals reconcile with the monthly rows and quarterly summary?",
+      "source_refs": [
+        "Annual Electricity Consumption.xlsx — Monthly Summary 2026!F3:F14 and F16",
+        "Annual Electricity Consumption.xlsx — Quarterly Summary!G7",
+        "Annual Electricity Consumption.xlsx — Source-wise Annual Analysis!B7"
+      ],
+      "observed": {
+        "monthly_sum": 2426123.0,
+        "monthly_annual_reported": 2425123.0,
+        "quarterly_annual_reported": 2427123.0,
+        "sourcewise_annual_reported": 2425123.0
+      },
+      "check_results": {
+        "all_reported_values_reported": true,
+        "discrepancy_flagged": true
+      },
+      "score": 1.0,
+      "passed": true
+    }
+  ]
+}
