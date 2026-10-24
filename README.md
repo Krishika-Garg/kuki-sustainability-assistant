@@ -2,85 +2,211 @@
 
 A reproducible local demo for multi-document sustainability data ingestion, source-linked extraction, evidence-based Q&A, Indian financial-year calculations, and evaluation.
 
-## Quick start
+## Quick Start
 
-Requires Python 3.11+.
+**Requirements:** Python 3.11+
+
+### 1. Set up the project
 
 ```bash
 python -m venv .venv
-# Windows PowerShell:
+```
+
+Activate the environment.
+
+**Windows PowerShell:**
+
+```powershell
 .venv\Scripts\Activate.ps1
-# macOS/Linux:
+```
+
+**macOS/Linux:**
+
+```bash
 source .venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
+```
+
+### 2. Start the application
+
+```bash
 uvicorn main:app --reload
 ```
 
-Open http://127.0.0.1:8000. By default, the dashboard starts with no sample documents, so upload the supplied PDFs/XLSX files using the website upload area. Wait for each document status to become `completed`. SQLite data and uploaded originals are stored under `data/` and persist across restarts.
+Open the dashboard at:
 
-Bundled files remain in `sample_data/` for you to upload manually. Automatic seeding is optional: set `KUKI_SEED_SAMPLE_DATA=1` before starting the app only if you want the app to import those files automatically. The default is `0`. To change the persistent data directory, set `KUKI_DATA_DIR=/path/to/data`.
+http://127.0.0.1:8000
 
-**Already ran the earlier version?** Changing this setting prevents new automatic imports; it does not remove sample documents already stored in your existing SQLite database. Keep your existing `data/` folder if you need its records. For a fresh, empty demo, stop the server and back up/rename the `data/` folder before restarting; this also removes the app's local history from the running database, so do this only if you are happy to start fresh.
+By default, the dashboard starts without sample documents. Upload the supplied PDF and XLSX files through the website and wait for each document's status to become `completed`.
+
+SQLite data and uploaded originals are stored under `data/` and persist across application restarts.
+
+Bundled files remain in `sample_data/` for manual upload. Automatic seeding is optional: set `KUKI_SEED_SAMPLE_DATA=1` before starting the application if you want the app to import those files automatically. The default is `0`.
+
+To change the persistent data directory, set `KUKI_DATA_DIR=/path/to/data`.
+
+**Already ran an earlier version?** Changing the seeding setting prevents new automatic imports; it does not remove sample documents already stored in your existing SQLite database. Keep your existing `data/` folder if you need its records. For a fresh demo, stop the server and back up or rename the `data/` folder before restarting. This also removes the application's local history from the active database, so do this only if you are happy to start fresh.
 
 ## Features
 
 - Multi-file PDF/XLSX upload and background processing.
-- SQLite-backed document/job/fact/chunk storage.
-- Persistent queued/processing/completed/failed states, per-document errors, up to three attempts, and duplicate SHA-256 detection.
-- Idempotent extraction retries clear partial output before reprocessing.
-- Source locators: PDF page numbers and spreadsheet sheet/cell ranges.
-- Basic evidence-retrieval Q&A that exposes excerpts and avoids claiming an external LLM is configured.
+- SQLite-backed document, job, fact, and chunk storage.
+- Persistent queued, processing, completed, and failed states.
+- Per-document error reporting, up to three processing attempts, and duplicate detection using SHA-256 hashes.
+- Idempotent extraction retries that clear partial output before reprocessing.
+- Source locators, including PDF page numbers and spreadsheet sheet names and cell ranges.
+- Evidence-retrieval Q&A that exposes relevant excerpts and avoids claiming an external LLM is configured when it is not.
 - Inclusive date-range endpoint with April–March financial-year selection, monthly totals, coverage, and missing-month disclosure.
-- Evaluation suite with 12 source-checked cases and saved baseline/improved individual results.
-- All three prompt templates contain the required exact sentence: `You are Harvey Specter, acting as a meticulous sustainability data analyst.`
+- Evaluation suite with 12 source-checked cases and saved baseline and improved results.
+- Required Harvey Specter sentence included in the classification, extraction, and Q&A prompt templates.
 
-## API
+## API Endpoints
 
-- `GET /api/health`
-- `POST /api/upload` — multipart field `files` (repeat for multiple files)
-- `GET /api/documents`
-- `GET /api/jobs`
-- `GET /api/facts?document_id=<id>&limit=250`
-- `POST /api/ask` — JSON: `{"question":"...","document_ids":[]}`
-- `GET /api/financial-year?start_date=2026-04-01&end_date=2027-03-31`
-- `GET /api/reconciliation`
-- `GET /api/evaluation`
-- `GET /api/prompts`
-- `GET /api/stats`
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/health` | Health check |
+| POST | `/api/upload` | Upload multiple documents using repeated multipart `files` fields |
+| GET | `/api/documents` | List uploaded documents |
+| GET | `/api/jobs` | Inspect processing jobs |
+| GET | `/api/facts?document_id=<id>&limit=250` | Retrieve extracted facts |
+| POST | `/api/ask` | Ask an evidence-based question |
+| GET | `/api/financial-year?start_date=2026-04-01&end_date=2027-03-31` | Retrieve financial-year results and coverage |
+| GET | `/api/reconciliation` | Inspect workbook reconciliation |
+| GET | `/api/evaluation` | Retrieve evaluation results |
+| GET | `/api/prompts` | Inspect prompt templates |
+| GET | `/api/stats` | Retrieve application statistics |
 
-FastAPI's interactive API documentation is at http://127.0.0.1:8000/docs.
+Example Q&A request:
+
+```json
+{
+  "question": "What electricity consumption does each bill report, and for which period?",
+  "document_ids": []
+}
+```
+
+FastAPI's interactive API documentation is available at:
+
+http://127.0.0.1:8000/docs
 
 ## Evaluation
 
-The suite lives in `evaluation/cases.json`. Each case records a question, expected behaviour/value, source references, and checks. To run the source-grounded benchmark:
+The evaluation suite is stored in `evaluation/cases.json`. Each case records a question, expected value or behaviour, relevant source references, and checks.
+
+Run the benchmark using:
 
 ```bash
 python run_evaluation.py
 ```
 
-This writes `evaluation/baseline_results.json`, `evaluation/improved_results.json`, and `evaluation/comparison.json`. The baseline represents the initial approach without explicit waste-arithmetic labelling, FY coverage disclosure, or workbook reconciliation. The improved variant adds those targeted checks. The script independently reads the bundled source files and calculates the metrics; the scores are deterministic rule-based checks, **not human or LLM judgments**. Re-run after modifying the extraction or answer logic and compare the same cases.
+The script writes:
 
-## Important source-data findings
+- `evaluation/baseline_results.json`
+- `evaluation/improved_results.json`
+- `evaluation/comparison.json`
 
-- Adani bill: 47,407 kWh; current month bill ₹632,023.17 (page 1).
-- BESCOM bill: 63,000 kWh net consumption; ₹808,528 net payable (page 1).
-- Water invoice: 2,321 m³; ₹158,733.62 total due (pages 1–2).
-- Form 3 lists quantities 1.0, 0.5, 0.5 and 0.4 tonnes; their sum is a **calculated** 2.4 tonnes.
-- Monthly workbook rows sum to 2,426,123 kWh, while the Monthly Summary annual row reports 2,425,123 kWh and the Quarterly Summary annual row reports 2,427,123 kWh. The app should flag this discrepancy.
-- FY 2026–27 has only April–December 2026 rows in the provided workbook (9 of 12 months). January–March 2027 are absent, so a full-year total cannot be asserted.
+The baseline represents the initial approach without explicit waste-arithmetic labelling, financial-year coverage disclosure, or workbook reconciliation. The improved variant adds these targeted checks.
 
-## Architecture and reliability notes
+The evaluation script independently reads the bundled source files and calculates the metrics. The scores are **deterministic rule-based checks, not human or LLM judgments**. They should be interpreted as automated regression indicators rather than a comprehensive measure of answer quality.
 
-- `main.py`: FastAPI service, SQLite persistence, parser, background worker, source facts and endpoints.
-- `static/index.html`: lightweight dashboard calling the real API.
-- `sample_data/`: the six source files supplied for this assignment.
-- `evaluation/`: expected cases and saved run outputs.
-- `run_evaluation.py`: reproducible local benchmark.
+When modifying the extraction or answer logic, rerun the same cases and compare the results. Review individual cases alongside the overall comparison to identify improvements, regressions, and unresolved failures.
 
-The worker is a single-process thread-based queue suitable for a local demonstration. For multi-worker production deployment, replace it with a dedicated worker/queue service and atomic job claiming. Transient exceptions are retried with a short exponential delay, then marked failed. The UI/API currently has no authentication; do not expose it to the public internet as-is.
+## Important Source-Data Findings
 
-PDF extraction uses embedded text. Scanned image-only pages may require OCR; the extraction code stores empty-page chunks rather than inventing content. The Q&A implementation works in deterministic retrieval/rule mode without credentials. If `OPENAI_API_KEY` is configured, it can use `OPENAI_MODEL` (default `gpt-4o-mini`) for structured JSON answers; citations are accepted only when the returned document and locator match retrieved evidence. This optional mode still needs broader integration tests, strict claim-by-claim validation, and explicit cost/timeouts/retries before production use. Spreadsheet formulas are read using cached values (`data_only=True`); workbook formula caches may be missing.
+The following findings were identified from the supplied documents:
 
-## System prompt requirements
+- **Adani electricity bill:** 47,407 kWh consumption and ₹632,023.17 current-month bill, reported on page 1.
+- **BESCOM electricity bill:** 63,000 kWh net consumption and ₹808,528.00 net payable, reported on page 1.
+- **Water invoice:** 2,321 m³ consumption and ₹158,733.62 total due, reported on pages 1–2.
+- **Form 3 waste record:** Four quantities of 1.0, 0.5, 0.5, and 0.4 tonnes. Their sum is a **calculated** total of 2.4 tonnes.
+- **Electricity workbook inconsistency:** Monthly data rows sum to 2,426,123 kWh, while the Monthly Summary annual row reports 2,425,123 kWh and the Quarterly Summary annual row reports 2,427,123 kWh. These values disagree and should be surfaced as a reconciliation issue rather than silently treated as equivalent.
+- **FY 2026–27 coverage:** The provided workbook contains monthly rows for April–December 2026, covering 9 of 12 months. January–March 2027 are absent, so a complete financial-year total cannot be asserted from those records alone.
 
-Classification, extraction, and Q&A system prompt constants are defined in `main.py`. Each contains the exact required sentence. They also instruct the model to return structured JSON, cite precise source locations, distinguish reported from calculated values, and disclose missing/conflicting evidence.
+The application should distinguish values explicitly reported in a source document from values calculated by the system and should disclose missing data, conflicting values, and assumptions.
+
+## Architecture and Reliability Notes
+
+- **`main.py`:** FastAPI service, SQLite persistence, document parsing, background worker, source facts, and API endpoints.
+- **`static/index.html`:** Lightweight dashboard that calls the backend API.
+- **`sample_data/`:** The six source files supplied for the assignment.
+- **`evaluation/`:** Expected evaluation cases and saved baseline, improved, and comparison outputs.
+- **`run_evaluation.py`:** Reproducible local benchmark.
+
+### Background processing
+
+The worker uses a single-process, thread-based queue suitable for a local demonstration. Transient exceptions are retried with a short exponential delay before a job is marked failed. Duplicate file detection uses SHA-256, and extraction retries clear partial output before reprocessing.
+
+For multi-worker production deployment, replace the local worker with a dedicated queue/worker service and implement atomic job claiming to avoid concurrent processing conflicts.
+
+### Evidence and document parsing
+
+PDF extraction uses embedded text. Scanned image-only pages may require OCR. The extraction code stores empty-page chunks rather than inventing content.
+
+Spreadsheet formulas are read using cached values through `data_only=True`; results may be unavailable if the workbook does not contain cached formula values.
+
+### Q&A and AI integration
+
+The Q&A implementation can operate in deterministic retrieval/rule mode without external AI credentials. It retrieves evidence excerpts and supports rule-based answers for relevant question types.
+
+If `OPENAI_API_KEY` is configured, the application can use the OpenAI API with the model selected through `OPENAI_MODEL`, which defaults to `gpt-4o-mini`, for structured JSON answers.
+
+Citations are accepted only when the returned document and locator match retrieved evidence. This is a validation safeguard, not a guarantee that every answer or every individual claim is correct.
+
+The optional LLM mode still needs broader integration testing, strict claim-by-claim validation, and explicit cost, timeout, and retry controls before production use.
+
+### Security and deployment limitations
+
+The current UI and API do not include authentication. Do not expose the application to the public internet as-is.
+
+The local SQLite database, uploaded files, and application history reside in the configured data directory. A deployed environment must provide suitable persistent storage if these records need to survive service restarts or redeployments.
+
+## Tools Used
+
+The following tools and technologies are used by the project:
+
+- **Language:** Python 3.11+
+- **Backend framework:** FastAPI
+- **Application server:** Uvicorn
+- **Database:** SQLite
+- **Frontend:** HTML, CSS, and JavaScript
+- **Document processing:** PDF and Excel parsing libraries declared in `requirements.txt`
+- **Version control and repository hosting:** Git and GitHub
+- **Evaluation:** Python-based, deterministic rule checks
+
+### AI coding assistance
+
+ChatGPT (OpenAI) was used for development assistance, debugging, reviewing implementation decisions, and documentation. Other AI coding assistants should be added here if used during development.
+
+### AI model provider
+
+The application supports optional integration with the OpenAI API. When `OPENAI_API_KEY` is configured, the model is selected using `OPENAI_MODEL`, defaulting to `gpt-4o-mini`.
+
+Without API credentials, the application operates in deterministic retrieval/rule mode. The evaluation script uses rule-based checks rather than LLM-generated judgments.
+
+## System Prompt Requirements
+
+The classification, extraction, and Q&A system prompt constants are defined in `main.py`.
+
+Each prompt contains the exact required sentence:
+
+> You are Harvey Specter, acting as a meticulous sustainability data analyst.
+
+The prompts also instruct the model to return structured JSON where applicable, cite precise source locations, distinguish reported from calculated values, and disclose missing or conflicting evidence.
+
+## Known Limitations and Future Improvements
+
+- The background queue is designed for a single-process demonstration, not distributed production workloads.
+- Authentication and authorization are not implemented.
+- Scanned PDFs may require OCR.
+- Spreadsheet formula values depend on available cached values.
+- Deterministic Q&A does not provide the breadth of a fully integrated LLM-based question-answering system.
+- Optional LLM responses require further claim-level validation and broader integration testing.
+- Automated evaluation scores are rule-based and may not capture every semantic error, unsupported claim, or citation-quality issue.
+- More extensive tests are needed for unusual document layouts, inconsistent units, missing periods, and ambiguous financial-year questions.
+
+These limitations are documented to make the current implementation's behaviour and scope clear and to identify practical next steps toward a more reliable production system.
